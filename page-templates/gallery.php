@@ -37,7 +37,7 @@ get_header();
                             </form>  
                     </div>
                     <div class="row">
-                        <div class="col-12">
+                        <div class="col-12" id="galleries">
                             <?php 
                             $userGallery = new WP_Query(array(
                                 'post_type' => 'gallery',
@@ -66,9 +66,9 @@ get_header();
                                     </div>
                                 </div>
                                 <div class="container">
-                                    <div class="row gallery border border-2 rounded p-5">
+                                    <div class="row gallery border border-2 rounded p-5" id="gallery-<?php the_ID(  ); ?>">
                                         <?php foreach( $images as $image ): ?>
-           `                                 <div class="gallery-wrap  " data-id="<?php the_ID(  ); ?>" data-imgId="<?php  echo $image['ID']; ?>">
+                                            <div class="gallery-wrap  " data-id="<?php the_ID( ); ?>" data-imgId="<?php  echo $image['ID']; ?>">
                                                 <a class="item-img text-center" href="<?php echo esc_url($image['url']); ?>">
                                                     <img class="img-thumbnail" src="<?php echo esc_url($image['sizes']['thumbnail']); ?>" alt="<?php echo esc_attr($image['alt']); ?>" />
                                                 </a>
