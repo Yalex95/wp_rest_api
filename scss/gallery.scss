@@ -1,0 +1,24 @@
+.gallery{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr) ;
+    gap: 2rem 6rem;
+    .gallery-wrap{
+        position:relative;
+        display: block;
+        border: 1px solid #e0e0e0;
+        border-radius: 5px;
+        padding: 25px 15px;
+    }
+    .delete-item{
+        position: absolute;
+        top: 5%;
+        right: 14%;
+    }
+    .item-img{
+        display: block;
+        width: 100%;
+        img{
+            margin: auto;
+        }
+    }
+}
