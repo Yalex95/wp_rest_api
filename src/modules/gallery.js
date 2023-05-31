@@ -9,12 +9,17 @@ class Gallery{
         $(".delete-item").on("click",this.deleteItem.bind(this));
         $('.upload-item').on('click',this.UploadItem.bind(this));
         $('.create-item').on('click',this.createGallery.bind(this));
+        $('.delete-gallery').on('click',this.removeGallery.bind(this));
+        
     }
-
     // Methods
     deleteItem(e){
         var thisGallery = $(e.target).parents('.gallery-wrap');
         var thisItem = $(e.target).parents('.gallery-wrap');
+
+        
+        $('.spinner').addClass('d-block');
+
         $.ajax({
             url: `${siteData.root_url}/wp-json/wp/v2/gallery/${thisGallery.data("id")}`,
             method: 'GET',
@@ -38,11 +43,13 @@ class Gallery{
                     contentType: 'application/json',
                     success: (response)=>{
                         // remove 
+                        
+                        $('.spinner').removeClass('d-block');
                         thisItem.fadeOut();
-                        console.log("Removed succesfully: "+response);
                     },
                     error: (error)=>{
                         console.log("error: "+error)
+                        $('.spinner').removeClass('d-block');
                     }
                   });
             },
@@ -54,6 +61,7 @@ class Gallery{
     }
 
     UploadItem(e){
+        $('.spinner').addClass('d-block');
         
         var thisGallery = $(e.target).parents('.form-wrap');
         // thisGallery.data("id")
@@ -98,6 +106,7 @@ class Gallery{
                             contentType: 'application/json',
                             success: (response)=>{
                                 $('#formFile').val('');
+                                $('.spinner').removeClass('d-block');
                                 $(`
                                 <div class="gallery-wrap  " data-id="${response.id}" data-imgId="${imgId}">
                                     <a class="item-img text-center" href="${img_url}">
@@ -109,11 +118,13 @@ class Gallery{
                             },
                             error: (error)=>{
                                 console.log("Error uploading to gallery:"+error)
+                                $('.spinner').removeClass('d-block');
                             }
                         })
                     },
                     error: (error)=>{
                         console.log("Error uploading media:"+error)
+                        $('.spinner').removeClass('d-block');
                     }
                 });
 
@@ -126,13 +137,15 @@ class Gallery{
     }
 
     createGallery(e){
+
+        $('.spinner').addClass('d-block');
         let title = $('.gallery-title').val();
         let imgFile = document.getElementById('formFileMultiple').files[0];
         // Create a FormData object and append the image file
         var formData = new FormData();
         formData.append('file', imgFile);
-        
         //Make the AJAX request to upload the image
+       
         $.ajax({
             url: `${siteData.root_url}/wp-json/wp/v2/media`,
             method: 'POST',
@@ -162,12 +175,17 @@ class Gallery{
                 dataType: 'json',
                 data: newGallery,
                 success: (response)=>{
-                   console.log('success'+ response)
+                    $('.gallery-title, #formFileMultiple').val('');
+
+                   $('.spinner').removeClass('d-block');
+                   let title = response.title.rendered.replace('Private: ','');
                    $(`
-                    <h3 class="mb-3">${response.title.rendered}</h3>
+                    <h3 class="mb-3">${title}</h3>
+                    <span class=" ms-3 btn btn-danger delete-gallery  d-inline-block" data-id="${response.id}"> Delete</span>
+                                   
                     <div class="container">
                         <div class="row">
-                            <label for="formFile" class="form-label mb-0">Add to ${response.title.rendered} gallery</label>
+                            <label for="formFile" class="form-label mb-0">Add to ${title} gallery</label>
                             <form class="mb-3 form-wrap row g-3 mt-0" data-id="${response.id}">
                             <div class="col-auto">
                                 <input class="form-control d-inline-block" type="file" id="formFile"> 
@@ -193,6 +211,7 @@ class Gallery{
                 },
                 error: (error)=>{
                     console.log('Error'+error)
+                    $('.spinner').removeClass('d-block');
                 }
             });
     },
@@ -203,5 +222,31 @@ class Gallery{
 
 
     }
+
+    removeGallery(e){
+        $('.spinner').addClass('d-block');
+       let thisGallery=$(e.target);
+       console.log(this)
+       $(this).fadeOut()
+/*
+        $.ajax({
+            beforeSend: (xhr)=>{
+                xhr.setRequestHeader('X-WP-Nonce', siteData.nonce)
+            },
+            url: `${siteData.root_url}/wp-json/wp/v2/gallery/${thisGallery.data('id')}`,
+            method: 'DELETE',
+            success: (response)=>{
+                console.log('Congrats')
+                thisGalleryContainer.fadeOut();
+                $('.spinner').removeClass('d-block');
+            },
+            error: (response)=>{
+                console.log('Error:', response);
+                $('.spinner').removeClass('d-block');
+            }
+        });*/
+    }
+
+   
 }
 export default Gallery;

@@ -26,10 +26,10 @@ get_header();
                             <h3>Create a New Gallery</h3>
                             <form action="" class="row g-3 mt-0">
                                 <div class="col-auto">
-                                    <input placeholder="Gallery Title Here" type="text" class="gallery-title  form-control">
+                                    <input placeholder="Gallery Title Here" type="text" class="gallery-title  form-control"  required>
                                 </div>
                                 <div class="col-auto">
-                                     <input class="form-control " type="file" id="formFileMultiple" >
+                                     <input class="form-control " type="file" id="formFileMultiple" required>
                                 </div>
                                 <div class="col-auto">
                                      <span class="btn btn-success create-item ">OK</span>
@@ -38,6 +38,7 @@ get_header();
                     </div>
                     <div class="row">
                         <div class="col-12" id="galleries">
+                            <div class="spinner"></div>
                             <?php 
                             $userGallery = new WP_Query(array(
                                 'post_type' => 'gallery',
@@ -51,13 +52,23 @@ get_header();
                                 
                                 if(!empty($images)):
                                 ?>
-                                <h3 class="mb-3"><?php the_title(); ?></h3>
+                                <div class="gallery-item " id='<?php echo 'gallery-'.get_the_ID(  ); ?>'>
+                                    
                                 <div class="container">
                                     <div class="row">
-                                        <label for="formFile" class="form-label mb-0">Add to <?php the_title(); ?> gallery</label>
+                                        <div class="col-6">
+                                        <h3 class="mb-3 d-inline-block gallery-title"  ><?php echo str_replace('Private: ','',esc_attr( get_the_title())); ?></h3>
+                                        <span class=" ms-3 btn btn-danger delete-gallery  d-inline-block" data-id="<?php the_ID(  ); ?>"> Delete</span>
+                                    
+                                        </div>    
+                                    </div>
+                                </div>
+                                <div class="container">
+                                    <div class="row">
+                                        <label for="formFile" class="form-label mb-0">Add to <?php echo str_replace('Private: ','',esc_attr( get_the_title())); ?> gallery</label>
                                         <form class="mb-3 form-wrap row g-3 mt-0" data-id="<?php the_ID(  ); ?>">
                                         <div class="col-auto">
-                                            <input class="form-control d-inline-block" type="file" id="formFile"> 
+                                            <input class="form-control d-inline-block" type="file" id="formFile" required> 
                                         </div>
                                         <div class="col-auto">
                                             <span class="btn btn-success upload-item"><i class="fa fa-pencil me-2" aria-hidden="true"></i>Upload</span></div>
@@ -76,6 +87,7 @@ get_header();
                                             </div>
                                         <?php endforeach; ?>
                                     </div>
+                                </div>
                                 </div>
                                 <?php
                                 endif;

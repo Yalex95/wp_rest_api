@@ -23,12 +23,13 @@ class Gallery {
     jquery__WEBPACK_IMPORTED_MODULE_0___default()(".delete-item").on("click", this.deleteItem.bind(this));
     jquery__WEBPACK_IMPORTED_MODULE_0___default()('.upload-item').on('click', this.UploadItem.bind(this));
     jquery__WEBPACK_IMPORTED_MODULE_0___default()('.create-item').on('click', this.createGallery.bind(this));
+    jquery__WEBPACK_IMPORTED_MODULE_0___default()('.delete-gallery').on('click', this.removeGallery.bind(this));
   }
-
   // Methods
   deleteItem(e) {
     var thisGallery = jquery__WEBPACK_IMPORTED_MODULE_0___default()(e.target).parents('.gallery-wrap');
     var thisItem = jquery__WEBPACK_IMPORTED_MODULE_0___default()(e.target).parents('.gallery-wrap');
+    jquery__WEBPACK_IMPORTED_MODULE_0___default()('.spinner').addClass('d-block');
     jquery__WEBPACK_IMPORTED_MODULE_0___default().ajax({
       url: `${siteData.root_url}/wp-json/wp/v2/gallery/${thisGallery.data("id")}`,
       method: 'GET',
@@ -50,11 +51,13 @@ class Gallery {
           contentType: 'application/json',
           success: response => {
             // remove 
+
+            jquery__WEBPACK_IMPORTED_MODULE_0___default()('.spinner').removeClass('d-block');
             thisItem.fadeOut();
-            console.log("Removed succesfully: " + response);
           },
           error: error => {
             console.log("error: " + error);
+            jquery__WEBPACK_IMPORTED_MODULE_0___default()('.spinner').removeClass('d-block');
           }
         });
       },
@@ -65,6 +68,7 @@ class Gallery {
     });
   }
   UploadItem(e) {
+    jquery__WEBPACK_IMPORTED_MODULE_0___default()('.spinner').addClass('d-block');
     var thisGallery = jquery__WEBPACK_IMPORTED_MODULE_0___default()(e.target).parents('.form-wrap');
     // thisGallery.data("id")
 
@@ -107,6 +111,7 @@ class Gallery {
               contentType: 'application/json',
               success: response => {
                 jquery__WEBPACK_IMPORTED_MODULE_0___default()('#formFile').val('');
+                jquery__WEBPACK_IMPORTED_MODULE_0___default()('.spinner').removeClass('d-block');
                 jquery__WEBPACK_IMPORTED_MODULE_0___default()(`
                                 <div class="gallery-wrap  " data-id="${response.id}" data-imgId="${imgId}">
                                     <a class="item-img text-center" href="${img_url}">
@@ -118,11 +123,13 @@ class Gallery {
               },
               error: error => {
                 console.log("Error uploading to gallery:" + error);
+                jquery__WEBPACK_IMPORTED_MODULE_0___default()('.spinner').removeClass('d-block');
               }
             });
           },
           error: error => {
             console.log("Error uploading media:" + error);
+            jquery__WEBPACK_IMPORTED_MODULE_0___default()('.spinner').removeClass('d-block');
           }
         });
       },
@@ -130,13 +137,14 @@ class Gallery {
     });
   }
   createGallery(e) {
+    jquery__WEBPACK_IMPORTED_MODULE_0___default()('.spinner').addClass('d-block');
     let title = jquery__WEBPACK_IMPORTED_MODULE_0___default()('.gallery-title').val();
     let imgFile = document.getElementById('formFileMultiple').files[0];
     // Create a FormData object and append the image file
     var formData = new FormData();
     formData.append('file', imgFile);
-
     //Make the AJAX request to upload the image
+
     jquery__WEBPACK_IMPORTED_MODULE_0___default().ajax({
       url: `${siteData.root_url}/wp-json/wp/v2/media`,
       method: 'POST',
@@ -168,12 +176,16 @@ class Gallery {
           dataType: 'json',
           data: newGallery,
           success: response => {
-            console.log('success' + response);
+            jquery__WEBPACK_IMPORTED_MODULE_0___default()('.gallery-title, #formFileMultiple').val('');
+            jquery__WEBPACK_IMPORTED_MODULE_0___default()('.spinner').removeClass('d-block');
+            let title = response.title.rendered.replace('Private: ', '');
             jquery__WEBPACK_IMPORTED_MODULE_0___default()(`
-                    <h3 class="mb-3">${response.title.rendered}</h3>
+                    <h3 class="mb-3">${title}</h3>
+                    <span class=" ms-3 btn btn-danger delete-gallery  d-inline-block" data-id="${response.id}"> Delete</span>
+                                   
                     <div class="container">
                         <div class="row">
-                            <label for="formFile" class="form-label mb-0">Add to ${response.title.rendered} gallery</label>
+                            <label for="formFile" class="form-label mb-0">Add to ${title} gallery</label>
                             <form class="mb-3 form-wrap row g-3 mt-0" data-id="${response.id}">
                             <div class="col-auto">
                                 <input class="form-control d-inline-block" type="file" id="formFile"> 
@@ -199,6 +211,7 @@ class Gallery {
           },
           error: error => {
             console.log('Error' + error);
+            jquery__WEBPACK_IMPORTED_MODULE_0___default()('.spinner').removeClass('d-block');
           }
         });
       },
@@ -207,7 +220,31 @@ class Gallery {
       }
     });
   }
+  removeGallery(e) {
+    jquery__WEBPACK_IMPORTED_MODULE_0___default()('.spinner').addClass('d-block');
+    let thisGallery = jquery__WEBPACK_IMPORTED_MODULE_0___default()(e.target);
+    console.log(this);
+    jquery__WEBPACK_IMPORTED_MODULE_0___default()(this).fadeOut();
+    /*
+            $.ajax({
+                beforeSend: (xhr)=>{
+                    xhr.setRequestHeader('X-WP-Nonce', siteData.nonce)
+                },
+                url: `${siteData.root_url}/wp-json/wp/v2/gallery/${thisGallery.data('id')}`,
+                method: 'DELETE',
+                success: (response)=>{
+                    console.log('Congrats')
+                    thisGalleryContainer.fadeOut();
+                    $('.spinner').removeClass('d-block');
+                },
+                error: (response)=>{
+                    console.log('Error:', response);
+                    $('.spinner').removeClass('d-block');
+                }
+            });*/
+  }
 }
+
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (Gallery);
 
 /***/ }),
